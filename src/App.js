@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import CountryCard from "./components/CountryCard";
 
 function App() {
-  const [countries, setCountries] = useState([]); // Stores all country data
-  const [filteredCountries, setFilteredCountries] = useState([]); // Stores search results
-  const [searchText, setSearchText] = useState(""); // Tracks search input
-  const [error, setError] = useState(null); // Stores API errors
+  const [countries, setCountries] = useState([]);
+  const [filteredCountries, setFilteredCountries] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [error, setError] = useState(null);
 
-  // Fetch countries from API
   const fetchCountries = async () => {
     try {
       const res = await fetch(
@@ -18,11 +16,11 @@ function App() {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
       const data = await res.json();
-      console.log("Fetched Countries:", data); // Debugging log
+      console.log("Fetched Countries:", data);
 
       if (Array.isArray(data)) {
         setCountries(data);
-        setFilteredCountries(data); // Initialize filtered list
+        setFilteredCountries(data);
       } else {
         console.error("Unexpected API response format");
         setCountries([]);
@@ -36,7 +34,6 @@ function App() {
     }
   };
 
-  // Handle search input and filter countries
   useEffect(() => {
     if (!searchText.trim()) {
       setFilteredCountries(countries);
@@ -50,7 +47,6 @@ function App() {
     }
   }, [searchText, countries]);
 
-  // Fetch countries on initial render
   useEffect(() => {
     fetchCountries();
   }, []);
@@ -67,21 +63,20 @@ function App() {
         />
       </div>
 
-      {error && <p className="error">{error}</p>} {/* Show API error if present */}
+      {error && <p className="error">{error}</p>}
 
       <div className="grid">
         {filteredCountries.length > 0 ? (
           filteredCountries.map((country, index) =>
             country?.common && country?.png ? (
-              <CountryCard
-                key={index}
-                name={country.common} // Corrected key for country name
-                flag={country.png} // Corrected key for country flag
-              />
+              <div key={index} className="countryCard">
+                <img src={country.png} alt={`${country.common} flag`} />
+                <h3>{country.common}</h3>
+              </div>
             ) : null
           )
         ) : (
-          !error && <p>No countries found</p> // Only show when no results
+          !error && <p>No countries found</p>
         )}
       </div>
     </div>
