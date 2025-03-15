@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import CountryCard from "./components/CountryCard";
 
 function App() {
   const [countries, setCountries] = useState([]);
@@ -7,6 +8,7 @@ function App() {
   const [searchText, setSearchText] = useState("");
   const [error, setError] = useState(null);
 
+  // Fetch countries from API
   const fetchCountries = async () => {
     try {
       const res = await fetch(
@@ -16,7 +18,7 @@ function App() {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
       const data = await res.json();
-      console.log("Fetched Countries:", data);
+      console.log("Fetched Countries:", data); // Debugging log
 
       if (Array.isArray(data)) {
         setCountries(data);
@@ -34,6 +36,7 @@ function App() {
     }
   };
 
+  // Filter countries based on search
   useEffect(() => {
     if (!searchText.trim()) {
       setFilteredCountries(countries);
@@ -47,12 +50,14 @@ function App() {
     }
   }, [searchText, countries]);
 
+  // Fetch data on initial render
   useEffect(() => {
     fetchCountries();
   }, []);
 
   return (
     <div>
+      {/* Search Bar */}
       <div className="searchDiv">
         <input
           className="searchBox"
@@ -63,16 +68,15 @@ function App() {
         />
       </div>
 
+      {/* Display error if API fails */}
       {error && <p className="error">{error}</p>}
 
+      {/* Country Cards Grid */}
       <div className="grid">
         {filteredCountries.length > 0 ? (
           filteredCountries.map((country, index) =>
             country?.common && country?.png ? (
-              <div key={index} className="countryCard">
-                <img src={country.png} alt={`${country.common} flag`} />
-                <h3>{country.common}</h3>
-              </div>
+              <CountryCard key={index} name={country.common} flag={country.png} />
             ) : null
           )
         ) : (
